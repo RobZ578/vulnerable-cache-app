@@ -49,7 +49,7 @@ In the `nginx.conf` file, the cache key is dangerously narrow:
 proxy_cache_key "$request_uri";
 Because the key only considers the URI, Nginx ignores the X-Forwarded-Host header when deciding whether to serve a cached response.
 
-2. The Sink (Flask)
+### 2. The Sink (Flask)
 The Flask app reflects the X-Forwarded-Host header directly into the HTML:
 
 Python
