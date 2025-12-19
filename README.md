@@ -72,8 +72,8 @@ Installation & Execution
 Clone and Build:
 
 Bash
-
-'''docker-compose up --build'''
+```text
+docker-compose up --build
 Access the Application:
 
 App URL: http://localhost:8080
