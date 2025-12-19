@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title or "Vulnerable Cache Lab" }}</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #020617;
+            padding: 15px 30px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+            color: #38bdf8;
+        }
+
+        nav a {
+            color: #cbd5f5;
+            margin-right: 15px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #38bdf8;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            color: #38bdf8;
+            margin-top: 0;
+        }
+
+        p {
+            color: #cbd5f5;
+            line-height: 1.6;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #020617;
+            border: 1px solid #1e293b;
+            color: #e5e7eb;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #38bdf8;
+            border: none;
+            color: #020617;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        code {
+            background: #020617;
+            padding: 4px 6px;
+            border-radius: 4px;
+            color: #fca5a5;
+        }
+
+        .danger {
+            color: #f87171;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🧪 Vulnerable Cache Poisoning Lab</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/login">Login</a>
+            <a href="/profile">Profile</a>
+            <a href="/profile-public">Public Page</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        Cache Poisoning — intentionally vulnerable ⚠️
+    </footer>
+</body>
+</html>

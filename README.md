@@ -1,101 +1,142 @@
-# Web Cache Poisoning & Session Hijacking Lab
-
-This repository contains a containerized lab environment designed to demonstrate a **Web Cache Poisoning** attack. By exploiting a misconfigured Nginx cache key, an attacker can inject malicious JavaScript into a public page, leading to the theft of session cookies from authenticated users.
+# Web Cache Poisoning
 
 
+## 📌 Overview
+This project demonstrates a sophisticated web security exploit chain: **Web Cache Poisoning** escalating into **Stored Cross-Site Scripting (XSS)**, and culminating in **Session/Credential Hijacking**.
 
-## 🛡️ Educational Purpose
-This project is for **educational and research purposes only**. It demonstrates a critical web security vulnerability to help developers and security engineers understand:
-1.  The difference between **Keyed** and **Unkeyed** HTTP inputs.
-2.  How reverse proxies like Nginx store and serve cached content.
-3.  How to mitigate cache-based attacks through proper configuration.
-
----
-
-## 🏗️ Architecture
-The environment consists of two main services orchestrated via Docker:
-
-* **Nginx (Reverse Proxy/Cache):** Listens on port `8080`. It handles caching logic and acts as the front-facing gateway.
-* **Flask (Backend Application):** Listens on port `5000`. It manages user authentication, private profiles, and the vulnerable public profile.
+The vulnerability arises from an improper cache key design in an Nginx reverse proxy combined with unsafe header reflection in a Flask backend. By manipulating the cache, an attacker can serve a malicious payload to legitimate users without ever interacting with them directly.
 
 
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-* [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
-* PowerShell (for the attack payload)
-
-### Installation
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/RobZ578/vulnerable-cache-app.git
-    cd vulnerable-cache-app
-    ```
-2.  **Start the environment:**
-    ```bash
-    docker-compose up --build
-    ```
+## 🏗️ Technology Stack
+* **Reverse Proxy:** Nginx (configured with `proxy_cache`)
+* **Backend Framework:** Flask (Python)
+* **Templating Engine:** Jinja2
+* **Containerization:** Docker & Docker Compose
+* **Exploit Tools:** Python (Requests), cURL
 
 ---
 
-## 🔓 The Vulnerability
+## 📁 Project Structure
+```text
+web-cache-poisoning-lab/
+├── app.py                # Vulnerable Flask application logic
+├── exploit.py            # ALL-IN-ONE exploit script (Poisoning + XSS + Hijacking)
+├── templates/            # Frontend Jinja2 templates
+│   ├── base.html         # Main layout
+│   ├── login.html        # Login form
+│   ├── home.html         # Home page
+│   ├── profile.html      # Profile page
+│   ├── profile_public.html # TARGET: The cache-poisoned endpoint
+│   └── collect.html      # Attacker's cookie exfiltration dashboard
+├── nginx.conf            # Misconfigured Nginx reverse proxy
+├── Dockerfile            # Container definition
+└── docker-compose.yml    # Multi-container orchestration
 
-1. The Cache Key (Nginx)
-In the `nginx.conf` file, the cache key is dangerously narrow:
-```nginx
-proxy_cache_key "$request_uri";
-Because the key only considers the URI, Nginx ignores the X-Forwarded-Host header when deciding whether to serve a cached response.
+___
 
-2. The Sink (Flask)
-The Flask app reflects the X-Forwarded-Host header directly into the HTML:
+
+⚠️ Vulnerability Analysis
+1. Nginx Cache Key Misconfiguration
+The proxy is configured to trust the X-Forwarded-Host header. Because this header is included in the cache key but not validated, an attacker can create a "unique" poisoned entry in the cache.
+
+2. Unsafe Header Reflection
+The Flask application reads the X-Forwarded-Host header and renders it directly into the HTML template without escaping.
 
 Python
 
-poison = request.headers.get('X-Forwarded-Host', 'Default-Zone')
-return f"<h1>Public Profile</h1><p>Region: {poison}</p>"
-⚔️ Proof of Concept (The Attack)
-Step 1: Poison the Cache
-Run this PowerShell one-liner to inject the malicious script into the Nginx cache. This script uses a hidden Image object to exfiltrate cookies to the /collect endpoint instantly.
+# Vulnerable Code Snippet in app.py
+region = request.headers.get('X-Forwarded-Host', 'Global')
+return render_template('profile_public.html', region=region)
+3. Missing Cookie Security
+The session cookies lack the HttpOnly flag. This is the final "green light" for the attacker, as it allows JavaScript (document.cookie) to access sensitive session identifiers once XSS is achieved.
 
-PowerShell
+⚔️ Attack Flow
+The Poisoning: The attacker sends a request with a malicious script in the X-Forwarded-Host header.
 
-$p = '<script>new Image().src="/collect?c="+document.cookie;</script>'; Invoke-WebRequest -Uri "http://localhost:8080/profile-public" -Headers @{"X-Forwarded-Host"=$p} -Verbose
-Note: Run this twice. The second attempt should return X-Cache-Status: HIT.
+The Storage: Nginx sees a "new" version of the page and caches it because the X-Forwarded-Host is part of the cache key.
 
-Step 2: The Victim Login
-Navigate to http://localhost:8080/login.
+The Victim: A legitimate user visits the public profile. Nginx serves the cached version containing the attacker's script.
 
-Log in as alice (Password: alice).
+The Exfiltration: The script runs in the user's browser, stealing their cookie and sending it to the attacker's /collect endpoint.
 
-The app redirects you to the private /profile page, showing "Welcome alice".
+🚀 Getting Started
+Prerequisites
+Docker and Docker Compose installed.
 
-Step 3: Trigger the Hijack
-While logged in as Alice, click the link to the "Public Cached Page".
+Python 3.x (for running the exploit script).
 
-Because the cache is poisoned, the browser executes the script.
+Installation & Execution
+Clone and Build:
 
-The session cookie is silently sent to the attacker's /collect page.
+Bash
 
-Step 4: Collect the Loot
-Visit http://localhost:8080/collect to view the captured session cookies.
+docker-compose up --build
+Access the Application:
 
-🛡️ Mitigation
-1. Correct Cache Key Configuration
-Ensure all headers that affect the page output are included in the cache key.
+App URL: http://localhost:8080
+
+Attacker Dashboard: http://localhost:8080/collect
+
+Running the Exploit
+The provided exploit.py is a centralized script designed to automate the entire attack chain. It performs all three phases in a single execution:
+
+Stage 1: Injects the payload via X-Forwarded-Host to poison the Nginx cache.
+
+Stage 2: Confirms the Stored XSS is active on the /profile-public endpoint.
+
+Stage 3: Prepares the listener to receive and display hijacked session cookies.
+
+To run the full exploit:
+
+Bash
+
+python3 exploit.py
+🛡️ Detailed Mitigation Guide
+To secure this environment, defenses must be implemented at the infrastructure, application, and browser levels.
+
+1. Infrastructure (Nginx)
+The primary goal is to ensure that unvalidated input cannot influence the cache key.
+
+Restrict Cache Keys: Avoid using request headers in the proxy_cache_key. A secure key should only use internal, immutable variables.
 
 Nginx
 
-proxy_cache_key "$request_uri$http_x_forwarded_host";
-2. Output Encoding
-Use a template engine like Jinja2 to automatically escape HTML characters, ensuring that even if a header is reflected, it is treated as text rather than executable code.
+# SECURE CONFIG
+proxy_cache_key "$scheme$proxy_host$request_uri";
+Header Sanitization: Strip sensitive or untrusted headers before passing the request to the backend.
+
+Nginx
+
+proxy_set_header X-Forwarded-Host "";
+proxy_set_header Host $host;
+2. Application (Flask/Jinja2)
+The application must treat all headers as untrusted user input.
+
+Context-Aware Output Encoding: Ensure Jinja2 is configured to auto-escape, or manually use the escape filter for reflected values.
+
+HTML
+
+<p>Your Current Region: {{ region | e }}</p>
+Input Validation: Validate headers against an allow-list of expected values before processing.
+
+3. Session Security (Cookies)
+Implement "defense in depth" to prevent credential theft even if an XSS vulnerability exists.
+
+HttpOnly Flag: Prevents JavaScript from accessing the cookie via document.cookie.
 
 Python
 
-# Safer implementation using render_template
-return render_template('profile_public.html', region=poison)
-HTML
+# SECURE FLASK SESSION CONFIG
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True, # Requires HTTPS
+    SESSION_COOKIE_SAMESITE='Lax',
+)
+4. Content Security Policy (CSP)
+Implement a CSP header to restrict where scripts can be loaded from and prevent the execution of inline scripts injected by an attacker.
 
-<p>Region: {{ region }}</p>
+⚖️ Educational Disclaimer
+This project is intended strictly for educational and academic purposes. It demonstrates how misconfigurations lead to critical vulnerabilities. Do not deploy these configurations in a production environment. Unauthorized access to computer systems is illegal.

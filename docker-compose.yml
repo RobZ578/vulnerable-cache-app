@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   flask-app:
@@ -21,6 +21,14 @@ services:
       - "8080:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+    # 🔥 CRITICAL FIX: cache exists ONLY in memory
+    tmpfs:
+      - /var/cache/nginx
+
+    # 🔒 Ensure no stale layers or orphan cache survive
+    restart: unless-stopped
+
     depends_on:
       - flask-app
     networks:

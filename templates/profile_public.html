@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+    <h2>Public Profile</h2>
+
+    <p>
+        Region:
+        <span class="danger">
+            {{ region | safe }}
+        </span>
+    </p>
+
+    <p>
+        <small>This page is cached by Nginx ⚠️</small>
+    </p>
+</div>
+
+{% endblock %}

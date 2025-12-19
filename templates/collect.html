@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Attacker-only overrides */
+    .attacker-card {
+        background: #020617;
+        border: 2px solid #7c2d12;
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.25);
+    }
+
+    .attacker-title {
+        color: #f87171;
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+
+    .cookie-entry {
+        background: #020617;
+        border: 1px solid #7c2d12;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 18px;
+        font-size: 16px;
+    }
+
+    .cookie-entry code {
+        font-size: 15px;
+        color: #fecaca;
+        word-break: break-all;
+    }
+
+    .meta {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+        color: #fca5a5;
+    }
+
+    .empty {
+        font-size: 18px;
+        color: #fca5a5;
+    }
+</style>
+
+<div class="card attacker-card">
+    <h2 class="attacker-title">☠️ Attacker Dashboard</h2>
+
+    {% if not stolen_data %}
+        <p class="empty">No cookies captured yet.</p>
+    {% else %}
+        {% for entry in stolen_data %}
+            <div class="cookie-entry">
+                <code>{{ entry.cookie }}</code>
+                <span class="meta">
+                    {{ entry.time }} · {{ entry.ip }}
+                </span>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock %}
