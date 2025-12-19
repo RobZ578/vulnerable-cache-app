@@ -38,7 +38,8 @@ web-cache-poisoning-lab/
 ___
 
 
-⚠️ Vulnerability Analysis
+## ⚠️ Vulnerability Analysis
+
 1. Nginx Cache Key Misconfiguration
 The proxy is configured to trust the X-Forwarded-Host header. Because this header is included in the cache key but not validated, an attacker can create a "unique" poisoned entry in the cache.
 
@@ -53,7 +54,9 @@ return render_template('profile_public.html', region=region)
 3. Missing Cookie Security
 The session cookies lack the HttpOnly flag. This is the final "green light" for the attacker, as it allows JavaScript (document.cookie) to access sensitive session identifiers once XSS is achieved.
 
-⚔️ Attack Flow
+
+## ⚔️ Attack Flow
+
 The Poisoning: The attacker sends a request with a malicious script in the X-Forwarded-Host header.
 
 The Storage: Nginx sees a "new" version of the page and caches it because the X-Forwarded-Host is part of the cache key.
@@ -62,7 +65,9 @@ The Victim: A legitimate user visits the public profile. Nginx serves the cached
 
 The Exfiltration: The script runs in the user's browser, stealing their cookie and sending it to the attacker's /collect endpoint.
 
-🚀 Getting Started
+
+## 🚀 Getting Started
+
 Prerequisites
 Docker and Docker Compose installed.
 
@@ -72,7 +77,7 @@ Installation & Execution
 Clone and Build:
 
 Bash
-```text
+
 docker-compose up --build
 Access the Application:
 
@@ -80,7 +85,11 @@ App URL: http://localhost:8080
 
 Attacker Dashboard: http://localhost:8080/collect
 
-Running the Exploit
+
+
+## Running the Exploit
+
+
 The provided exploit.py is a centralized script designed to automate the entire attack chain. It performs all three phases in a single execution:
 
 Stage 1: Injects the payload via X-Forwarded-Host to poison the Nginx cache.
@@ -94,7 +103,12 @@ To run the full exploit:
 Bash
 
 python3 exploit.py
-🛡️ Detailed Mitigation Guide
+
+
+
+## 🛡️ Detailed Mitigation Guide
+
+
 To secure this environment, defenses must be implemented at the infrastructure, application, and browser levels.
 
 1. Infrastructure (Nginx)
@@ -138,5 +152,5 @@ app.config.update(
 4. Content Security Policy (CSP)
 Implement a CSP header to restrict where scripts can be loaded from and prevent the execution of inline scripts injected by an attacker.
 
-⚖️ Educational Disclaimer
-This project is intended strictly for educational and academic purposes. It demonstrates how misconfigurations lead to critical vulnerabilities. Do not deploy these configurations in a production environment. Unauthorized access to computer systems is illegal.
+## ⚖️ Educational Disclaimer
+This project is intended strictly for educational purposes. It demonstrates how misconfigurations lead to critical vulnerabilities. Do not deploy these configurations in a production environment.
