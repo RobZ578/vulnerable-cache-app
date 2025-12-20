@@ -15,7 +15,7 @@ The vulnerability arises from an **improper cache key design** in an **Nginx rev
 * **Backend Framework:** Flask (Python)
 * **Templating Engine:** Jinja2
 * **Containerization:** Docker & Docker Compose
-* **Exploit Tools:** Python (`requests`), cURL
+* **Exploit Tools:** Python (`requests`), cURL 
 
 ---
 
@@ -23,6 +23,7 @@ The vulnerability arises from an **improper cache key design** in an **Nginx rev
 
 ```text
 web-cache-poisoning-lab/
+<<<<<<< HEAD
 ├── app.py                  # Vulnerable Flask application logic
 ├── exploit.py              # All-in-one exploit (poisoning + XSS + hijacking)
 ├── templates/
@@ -37,6 +38,22 @@ web-cache-poisoning-lab/
 ├── docker-compose.yml
 └── README.md
 ```
+=======
+├── app.py                # Vulnerable Flask application logic
+├── exploit.py            # ALL-IN-ONE exploit script (Poisoning + XSS + Hijacking)
+├── templates/            # Frontend Jinja2 templates
+│   ├── base.html         # Main layout
+│   ├── login.html        # Login form
+│   ├── home.html         # Home page
+│   ├── profile.html      # Profile page
+│   ├── profile_public.html # TARGET: The cache-poisoned endpoint
+│   └── collect.html      # Attacker's cookie exfiltration dashboard
+├── nginx.conf            # Misconfigured Nginx reverse proxy
+├── Dockerfile            # Container definition
+└── docker-compose.yml    # Multi-container orchestration
+```
+___
+>>>>>>> 282650e9665e8c8a1206c6f9293ecd2e329e3bce
 
 ---
 
@@ -246,6 +263,7 @@ Deploy a CSP header to block inline scripts and prevent injected JavaScript exec
 ---
 
 ## ⚖️ Educational Disclaimer
+<<<<<<< HEAD
 
 ⚠️ **This project is strictly for educational and research purposes.**
 
@@ -253,3 +271,6 @@ It demonstrates how small misconfigurations can lead to critical security vulner
 **Do NOT deploy these configurations in production environments.**
 
 ---
+=======
+This project is intended strictly for educational purposes. It demonstrates how misconfigurations lead to critical vulnerabilities. Do not deploy these configurations in a production environment.
+>>>>>>> 282650e9665e8c8a1206c6f9293ecd2e329e3bce
