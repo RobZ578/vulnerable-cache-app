@@ -38,23 +38,6 @@ web-cache-poisoning-lab/
 ├── docker-compose.yml
 └── README.md
 ```
-=======
-├── app.py                # Vulnerable Flask application logic
-├── exploit.py            # ALL-IN-ONE exploit script (Poisoning + XSS + Hijacking)
-├── templates/            # Frontend Jinja2 templates
-│   ├── base.html         # Main layout
-│   ├── login.html        # Login form
-│   ├── home.html         # Home page
-│   ├── profile.html      # Profile page
-│   ├── profile_public.html # TARGET: The cache-poisoned endpoint
-│   └── collect.html      # Attacker's cookie exfiltration dashboard
-├── nginx.conf            # Misconfigured Nginx reverse proxy
-├── Dockerfile            # Container definition
-└── docker-compose.yml    # Multi-container orchestration
-```
-___
->>>>>>> 282650e9665e8c8a1206c6f9293ecd2e329e3bce
-
 ---
 
 ## ⚠️ Vulnerability Analysis
