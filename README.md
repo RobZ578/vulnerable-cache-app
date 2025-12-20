@@ -20,7 +20,7 @@ The vulnerability arises from an improper cache key design in an Nginx reverse p
 ---
 
 ## 📁 Project Structure
-```text
+
 web-cache-poisoning-lab/
 ├── app.py                # Vulnerable Flask application logic
 ├── exploit.py            # ALL-IN-ONE exploit script (Poisoning + XSS + Hijacking)
