@@ -265,12 +265,9 @@ Deploy a CSP header to block inline scripts and prevent injected JavaScript exec
 ## ⚖️ Educational Disclaimer
 <<<<<<< HEAD
 
-⚠️ **This project is strictly for educational and research purposes.**
+⚠️ **This project is strictly for educational purposes.**
 
 It demonstrates how small misconfigurations can lead to critical security vulnerabilities.
 **Do NOT deploy these configurations in production environments.**
 
 ---
-=======
-This project is intended strictly for educational purposes. It demonstrates how misconfigurations lead to critical vulnerabilities. Do not deploy these configurations in a production environment.
->>>>>>> 282650e9665e8c8a1206c6f9293ecd2e329e3bce
